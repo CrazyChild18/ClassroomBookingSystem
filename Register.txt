@@ -1,0 +1,21 @@
+title Register
+
+actor Admin
+boundary Register
+control UserManage
+
+Admin->Register:regist(userID, password)
+activate Register
+
+
+Register->UserManage: record()
+activate UserManage
+
+UserManage-->Register: return createSuccessful
+deactivate UserManage
+
+Register-->Admin: return registSuccessful
+deactivate Register
+
+
+

@@ -1,0 +1,28 @@
+title Log in
+
+actor User
+boundary LoginUI
+control UserManage
+database DB
+
+User->LoginUI:login(userID, password)
+
+LoginUI->UserManage:transmit(String: userID, String: password)
+activate UserManage
+
+
+UserManage->DB:query(String: userID, String: password)
+UserManage->UserManage:verify()
+alt userID&password correct
+
+UserManage-->User:return Correct
+
+else userID&password wrong
+
+UserManage-->User:return Wrong
+
+end 
+deactivate UserManage
+
+
+

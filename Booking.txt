@@ -1,0 +1,55 @@
+title Booking
+
+actor Teacher&Monitor
+control BookingSystem
+participant ClassRooms
+entity Booking
+
+
+Teacher&Monitor->BookingSystem:createBooking()
+activate BookingSystem
+
+BookingSystem->ClassRooms:getBookings()
+activate ClassRooms
+
+loop
+ClassRooms->ClassRooms:getTime()
+activate ClassRooms
+ClassRooms-->ClassRooms:returnTime()
+deactivate ClassRooms
+end
+
+loop
+ClassRooms->ClassRooms:getRoom()
+activate ClassRooms
+ClassRooms-->ClassRooms:returnRoom()
+deactivate ClassRooms
+end 
+
+ClassRooms-->BookingSystem:return bookings
+deactivate ClassRooms
+
+BookingSystem-->Teacher&Monitor:displayWeek()
+deactivate BookingSystem
+activate Teacher&Monitor
+
+Teacher&Monitor->BookingSystem:SelectTime()
+deactivate Teacher&Monitor
+activate BookingSystem
+
+BookingSystem->ClassRooms:recordBooking()
+activate ClassRooms
+
+ClassRooms->Booking:recordDetails()
+activate Booking
+
+ClassRooms<--Booking:\n
+deactivate Booking
+
+BookingSystem<--ClassRooms:
+deactivate ClassRooms
+
+BookingSystem->BookingSystem:updateDisplay()
+
+Teacher&Monitor<--BookingSystem:displatWeek()
+deactivate BookingSystem

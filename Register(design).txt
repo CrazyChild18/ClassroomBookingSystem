@@ -1,0 +1,27 @@
+title Register
+
+actor Admin
+boundary RegisterUI
+boundary Register
+control UserManage
+database DB
+
+Admin->RegisterUI:regist(userID, password)
+activate RegisterUI
+
+RegisterUI->Register:transmit(String userID, String password)
+activate Register
+
+Register->DB:record(sql)
+Register->UserManage: record()
+activate UserManage
+
+UserManage-->Register: return createSuccessful
+deactivate UserManage
+
+Register-->RegisterUI:return registSuccessful
+deactivate Register
+
+
+Admin<--RegisterUI:
+deactivate RegisterUI

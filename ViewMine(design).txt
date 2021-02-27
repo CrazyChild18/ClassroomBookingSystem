@@ -1,0 +1,47 @@
+title ViewMine
+
+actor Student&Teaccher
+
+boundary ViewMineUI
+
+control BookingSystem
+participant ClassRoom
+entity Booking
+database DB
+
+Student&Teaccher->ViewMineUI:mouseDown(pos)
+activate ViewMineUI
+
+Student&Teaccher<--ViewMineUI:
+deactivate ViewMineUI
+
+Student&Teaccher->ViewMineUI:selectWeek(week)
+activate ViewMineUI
+
+ViewMineUI->BookingSystem:getWeek(week)
+activate BookingSystem
+
+BookingSystem->ClassRoom:getBookings(week)
+activate ClassRoom
+
+ClassRoom->DB:executeQuery(sql : String)
+loop 
+ClassRoom->Booking:getTime()
+activate Booking
+
+Booking-->ClassRoom:return time
+
+ClassRoom->Booking:getRoom()
+
+ClassRoom<--Booking:return room
+deactivate Booking
+end 
+
+ClassRoom-->BookingSystem:return bookings(time room)
+deactivate ClassRoom
+
+ViewMineUI<-BookingSystem:update()
+deactivate BookingSystem
+
+ViewMineUI->Student&Teaccher:displayWeek()
+deactivate ViewMineUI

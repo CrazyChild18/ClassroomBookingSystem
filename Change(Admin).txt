@@ -1,0 +1,121 @@
+title Change(Admin)
+
+actor Admin
+boundary Dialog
+boundary CancelUI
+control BookingSystem
+participant Classrooms
+entity current_Booking
+entity select_Booking
+participant BookingMapper
+database DB
+
+
+Admin->CancelUI:mouseClick(button)
+activate CancelUI
+
+Admin->CancelUI:selectWeek()
+CancelUI->BookingSystem:queryBooking(week)
+activate BookingSystem
+
+loop
+BookingSystem->current_Booking:getRoom()
+BookingSystem->current_Booking:getDate()
+BookingSystem->current_Booking:getLecture()
+end 
+
+BookingSystem-->CancelUI:displayWeek()
+deactivate BookingSystem
+
+Admin<--CancelUI:
+deactivate CancelUI
+
+Admin->CancelUI:mouseClick(pos)
+activate CancelUI
+
+CancelUI->BookingSystem:queryBooking(week)
+activate BookingSystem
+
+
+BookingSystem->Classrooms:booking := getBooking(DateTime: time; Int: room; String: activity)
+activate Classrooms
+
+BookingSystem<--Classrooms:
+deactivate Classrooms
+
+else case (user has not jurisdiction)
+activate Classrooms
+
+deactivate Classrooms
+CancelUI<-BookingSystem:return false
+Admin<-CancelUI:return false
+
+CancelUI<-BookingSystem:message(message : String, true : Boolean)
+activate CancelUI
+
+
+CancelUI->*Dialog:
+activate Dialog
+
+Dialog-->CancelUI:
+deactivate Dialog
+alt case Yes
+Dialog<-CancelUI:showAndWait();
+activate Dialog
+
+Admin<-Dialog:
+Admin-->Dialog:
+
+note over Dialog:user selects OK
+Dialog-->CancelUI:return true
+deactivate Dialog
+
+CancelUI-->BookingSystem:return true
+deactivate CancelUI
+
+BookingSystem->select_Booking:removeBooking()
+destroy select_Booking
+BookingSystem->Classrooms:removeBooking(selectedBooking : Booking)
+activate Classrooms
+
+
+Classrooms->BookingMapper:deleteBooking(b : Booking)
+activate BookingMapper
+BookingMapper->BookingMapper:performUpdate(sql : String)
+activate BookingMapper
+
+BookingMapper->DB:executeUpdate(sql : String)
+BookingMapper-->BookingMapper:
+deactivate BookingMapper
+
+Classrooms<--BookingMapper:
+deactivate BookingMapper
+BookingSystem<--Classrooms:
+deactivate Classrooms
+BookingSystem-->CancelUI:updateDisplay()
+Admin<--CancelUI:
+deactivate CancelUI
+else case No
+Dialog<-CancelUI:showAndWait()
+activate CancelUI
+activate Dialog
+
+Admin<-Dialog:
+Admin-->Dialog:
+
+
+note over Dialog:user selects OK
+
+
+Dialog-->CancelUI:return false
+deactivate Dialog
+
+
+CancelUI-->BookingSystem:return false
+
+
+CancelUI<--BookingSystem:
+deactivate BookingSystem
+Admin<--CancelUI:
+deactivate CancelUI
+end

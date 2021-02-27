@@ -1,0 +1,109 @@
+title Booking
+
+actor Teacher&Monitor
+boundary Dialog
+boundary BookingUI
+control BookingSystem
+participant ClassRooms
+participant RoomMapper
+participant BookingMapper
+entity Room
+database DB
+boundary Reservation
+
+
+
+Teacher&Monitor->BookingUI:mouseClick(pos)
+activate BookingUI
+
+BookingUI->BookingSystem:getWeek(week)
+activate BookingSystem
+
+
+
+BookingSystem->ClassRooms:getBookings()
+activate ClassRooms
+ClassRooms->BookingMapper:queryBooking(int: week)
+activate BookingMapper
+BookingMapper->DB:executeQuery(sql : String)
+ClassRooms<--BookingMapper:
+deactivate BookingMapper
+
+loop 
+
+ClassRooms->ClassRooms:getTime()
+ClassRooms-->ClassRooms:return time
+ClassRooms->ClassRooms:getRoom()
+ClassRooms-->ClassRooms:return Room
+end 
+
+BookingSystem<--ClassRooms:return Bookings
+deactivate ClassRooms
+
+
+BookingUI<-BookingSystem:update()
+
+deactivate BookingSystem
+Teacher&Monitor<--BookingUI:
+deactivate BookingUI
+
+
+Teacher&Monitor->BookingUI:mouseClick()
+activate BookingUI
+
+BookingUI->*Dialog:ReservationDialog
+activate Dialog
+
+Dialog-->BookingUI:return activity
+deactivate Dialog
+
+BookingUI->BookingSystem:transmit(time, activity)
+activate BookingSystem
+
+
+
+BookingSystem->ClassRooms:addBooking(DateTime:time, String:activity, String: id)
+activate ClassRooms
+
+
+
+ClassRooms->RoomMapper:getRoom(int: roomnumber)
+activate RoomMapper
+ClassRooms<-RoomMapper:return(int: number)
+deactivate RoomMapper
+ClassRooms->BookingMapper:addBooking(DateTime: time, String: activity. String id)
+activate BookingMapper
+
+BookingMapper->DB:executeQuery(sql : String)
+BookingMapper->*Reservation:addBooking(DateTime: time, String: activity. String id)
+activate Reservation
+
+
+BookingMapper<--Reservation:
+deactivate Reservation
+
+ClassRooms<--BookingMapper:
+deactivate BookingMapper
+
+BookingSystem<--ClassRooms:
+deactivate ClassRooms
+
+BookingSystem->BookingSystem:notifyObservers()
+activate BookingSystem
+
+BookingUI<-BookingSystem:update
+activate BookingUI
+
+BookingUI->BookingSystem:getAvtivity()
+BookingUI<--BookingSystem:return activity
+BookingUI->BookingSystem:getRoom()
+BookingUI<--BookingSystem:return roon
+BookingUI->BookingSystem:getDate()
+BookingUI<-BookingSystem:return date
+BookingUI-->BookingSystem:
+deactivate BookingSystem
+deactivate BookingUI
+BookingUI<--BookingSystem:
+deactivate BookingSystem
+Teacher&Monitor<--BookingUI:
+deactivate BookingUI

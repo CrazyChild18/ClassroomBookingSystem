@@ -1,0 +1,26 @@
+title ViewMine
+
+actor Student&Teaccher
+control BookingSystem
+participant ClassRoom
+entity Booking
+
+Student&Teaccher->BookingSystem:displayWeek()
+activate BookingSystem
+
+BookingSystem->ClassRoom:getBookings()
+activate ClassRoom
+
+loop 
+ClassRoom->Booking:getTime()
+activate Booking
+
+Booking-->ClassRoom:return time
+deactivate Booking
+end 
+
+ClassRoom-->BookingSystem:return bookings
+deactivate ClassRoom
+
+BookingSystem-->Student&Teaccher:displayWeek()
+deactivate BookingSystem

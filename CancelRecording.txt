@@ -1,0 +1,44 @@
+title CancelRecording
+
+actor Admin
+control BookingSystem
+participant current_Booking
+participant select_Booking
+
+Admin->BookingSystem:selectClass()
+activate BookingSystem
+
+Admin->BookingSystem:selectWeek()
+
+loop 
+BookingSystem->current_Booking:getBookings()
+activate current_Booking
+
+current_Booking-->BookingSystem:return bookings
+deactivate current_Booking
+end 
+
+BookingSystem-->Admin:displayWeek()
+deactivate BookingSystem
+
+Admin->BookingSystem:SelectBooking()
+activate BookingSystem
+
+
+
+Admin<--BookingSystem:confirm()
+activate Admin
+
+
+Admin->BookingSystem:return(Yes)
+deactivate Admin
+
+
+BookingSystem->select_Booking:cancelBooking()
+destroy select_Booking
+
+
+BookingSystem->BookingSystem:updateDisplay()
+
+Admin<--BookingSystem:displatWeek()
+deactivate BookingSystem

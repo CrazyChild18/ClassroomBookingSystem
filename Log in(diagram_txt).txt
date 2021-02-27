@@ -1,0 +1,23 @@
+title Log in
+
+actor User
+control UserManage
+
+User->UserManage:login(userID, password)
+
+UserManage->UserManage:verify()
+activate UserManage
+
+alt userID&password correct
+
+UserManage-->User:return Correct
+
+else userID&password wrong
+
+UserManage-->User:return Wrong
+
+end 
+deactivate UserManage
+
+
+

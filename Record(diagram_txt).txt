@@ -1,0 +1,66 @@
+title Record
+
+actor Admin
+control BookingSystem
+participant ClassRooms
+entity SystemCheck
+entity Booking
+
+
+Admin->BookingSystem:selectClass()
+activate BookingSystem
+
+Admin->BookingSystem:selectWeek()
+BookingSystem->ClassRooms:getBookings()
+activate ClassRooms
+
+loop 
+ClassRooms->ClassRooms:getTime()
+activate ClassRooms
+
+ClassRooms-->ClassRooms:returnTime()
+deactivate ClassRooms
+end 
+
+loop 
+ClassRooms->ClassRooms:getRoom()
+activate ClassRooms
+
+ClassRooms-->ClassRooms:returnRoom()
+deactivate ClassRooms
+end 
+
+ClassRooms-->BookingSystem:return bookings
+deactivate ClassRooms
+
+BookingSystem-->Admin:displayWeek()
+deactivate BookingSystem
+activate Admin
+
+Admin->BookingSystem:SelectTime()
+deactivate Admin
+activate BookingSystem
+
+BookingSystem->ClassRooms:recordBooking()
+activate ClassRooms
+
+ClassRooms->SystemCheck:sendDetails()
+activate SystemCheck
+
+SystemCheck->Booking:recordDetails()
+activate Booking
+
+SystemCheck<--Booking:
+deactivate Booking
+
+ClassRooms<--SystemCheck:
+deactivate SystemCheck
+
+
+BookingSystem<--ClassRooms:
+deactivate ClassRooms
+
+BookingSystem->BookingSystem:updateDisplay()
+
+Admin<--BookingSystem:displatWeek()
+deactivate BookingSystem

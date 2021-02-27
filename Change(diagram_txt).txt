@@ -1,0 +1,60 @@
+title Change
+
+actor Admin
+control BookingSystem
+participant current_Booking
+participant select_Booking
+control Booking
+
+Admin->BookingSystem:selectClass()
+activate BookingSystem
+
+Admin->BookingSystem:selectWeek()
+
+loop 
+BookingSystem->current_Booking:getBookings()
+activate current_Booking
+
+current_Booking-->BookingSystem:return bookings
+deactivate current_Booking
+end 
+
+BookingSystem-->Admin:displayWeek()
+deactivate BookingSystem
+
+Admin->BookingSystem:SelectBooking()
+activate BookingSystem
+
+
+
+Admin<--BookingSystem:confirm()
+activate Admin
+
+
+Admin->BookingSystem:returnYes
+deactivate Admin
+
+
+BookingSystem->select_Booking:getDetails()
+activate select_Booking
+
+BookingSystem<--select_Booking:returnDetails()
+deactivate select_Booking
+
+BookingSystem->select_Booking:delete
+destroy select_Booking
+
+
+
+BookingSystem->Admin:showDetails()
+activate Admin
+Admin->BookingSystem:senDetails()
+deactivate Admin
+BookingSystem->BookingSystem:updateDisplay()
+Admin->BookingSystem:selectTime()
+BookingSystem->Booking:recordRoom()
+
+BookingSystem<--Booking:
+Admin<--BookingSystem:displatWeek()
+deactivate BookingSystem
+
